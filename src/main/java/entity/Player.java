@@ -1,5 +1,8 @@
 package entity;
 
+import dto.MessageDTO;
+import mapper.PlayerMapper;
+
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.BlockingQueue;
 
@@ -19,21 +22,6 @@ public class Player implements Runnable {
         this.outgoingMessage = outgoingMessage;
         this.isInitiator = isInitiator;
         this.maxMessages = maxMessages;
-    }
-
-    public String getName() {
-
-        return name;
-    }
-
-    public int getMessageCounter() {
-
-        return messageCounter;
-    }
-
-    public void increasingMessageCounter () {
-
-        this.messageCounter++;
     }
 
     @Override
@@ -60,31 +48,25 @@ public class Player implements Runnable {
                 //Beta sending response
                 if (!isInitiator) {
 
-                    String response = "response # " + (messageCounter);
+                    MessageDTO response = PlayerMapper.createResponse("",  messageCounter);
 
                     System.out.println(
                             name + " sent: " + response
                     );
 
-                    outgoingMessage.put(response);
+                    outgoingMessage.put(response.toString());
                 }
                 else {
 
                     //Initiator sending next message
-                    //messageCounter++;
-
-                    String nextMessage = "message # " + messageCounter + " from Initiator!!!";
+                    MessageDTO nextMessage = PlayerMapper.createMessage("", messageCounter);
 
                     System.out.println(
                             name + " sent: " + nextMessage
                     );
 
-                    outgoingMessage.put(nextMessage);
+                    outgoingMessage.put(nextMessage.toString());
                 }
-
-                //Seperating them each other
-                //System.out.println("=========================//======================");
-                //System.out.println("=========================//======================");
             }
         }
         catch (InterruptedException interruptedException) {
@@ -101,12 +83,12 @@ public class Player implements Runnable {
 
         messageCounter = 1;
 
-        String initialMessage = "hi from Initiator";
+        MessageDTO initialMessage = new MessageDTO("", "hi from Initiator!!!");
 
         System.out.println(
-                name + " sent " + initialMessage
+                name + " sent: " + initialMessage
         );
 
-        outgoingMessage.put(initialMessage);
+        outgoingMessage.put(initialMessage.toString());
     }
 }

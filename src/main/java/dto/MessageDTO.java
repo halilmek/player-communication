@@ -2,20 +2,39 @@ package dto;
 
 public class MessageDTO {
 
-    private String message;
+    private String senderName;
+    private String content;
 
-    public MessageDTO(String message) {
+    public MessageDTO(String senderName, String content) {
 
-        this.message = message;
+        this.senderName = senderName;
+        this.content = content;
+
     }
 
-    public String getMessage() {
+    public String getSenderName() {
 
-        return message;
+        return senderName;
     }
 
-    public void setMessage(String message) {
+    public void setSenderName(String senderName) {
 
-        this.message = message;
+        this.senderName = senderName;
+    }
+
+    public String getContent() {
+
+        return content;
+    }
+
+    public void setContent(String content) {
+
+        this.content = content;
+    }
+
+    @Override
+    public String toString() {
+
+        return senderName + content;
     }
 }

@@ -5,13 +5,13 @@ import entity.Player;
 
 public class PlayerMapper {
 
-    public static String mapToMessage (Player player, String message) {
+    public static MessageDTO createResponse (String senderName, int messageCounter) {
 
-        return player.getName() + message;
+        return new MessageDTO(senderName, "response # " + messageCounter);
     }
 
-    public static MessageDTO mapToDTO (String message) {
+    public static MessageDTO createMessage (String senderName, int messageCounter) {
 
-        return new MessageDTO(message);
+        return new MessageDTO("message # " + messageCounter + " from ", senderName);
     }
 }
