@@ -13,10 +13,11 @@ public class PlayerController {
     }
 
 
-    public void startGame() {
+    public void startGameController() {
 
         System.out.println("Game is starting!!!");
 
-        playerServiceImpl.initiatingConversation(new MessageDTO("Hello to Player Beta!"));
+        playerServiceImpl.startGame();
+        //playerServiceImpl.initiatingConversation(new MessageDTO(" says hello to Player Beta!"));
     }
 }

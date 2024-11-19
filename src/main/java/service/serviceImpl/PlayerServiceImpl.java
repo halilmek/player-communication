@@ -6,6 +6,9 @@ import mapper.PlayerMapper;
 import repository.PlayerRepository;
 import service.PlayerService;
 
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 public class PlayerServiceImpl implements PlayerService {
 
     private final PlayerRepository playerRepository;
@@ -20,42 +23,49 @@ public class PlayerServiceImpl implements PlayerService {
 
     private void savingPlayerToDB() {
 
-        playerRepository.save(new Player("Player Initiator"));
-        playerRepository.save(new Player("Player Beta"));
+        //Creating BlockingQueue
+        BlockingQueue<String> queue1 = new LinkedBlockingQueue<>();
+        BlockingQueue<String> queue2 = new LinkedBlockingQueue<>();
+
+        //Defining the players
+        playerRepository.createAndSavePlayer("Initiator", queue1,queue2,true,10);
+        playerRepository.createAndSavePlayer("Beta", queue2, queue1, false, 10);
     }
 
-
     @Override
-    public void initiatingConversation(MessageDTO initialMessageDTO) {
+    public void startGame() {
 
-        Player player1 = playerRepository.findByName("Player Initiator");
-        Player player2 = playerRepository.findByName("Player Beta");
+        //Bring players from DB
+        Player player1 = playerRepository.findByName("Initiator");
+        Player player2 = playerRepository.findByName("Beta");
 
-        System.out.println(
-                PlayerMapper.mapToMessage(player1, initialMessageDTO.getMessage())
-        );
+        //Starting player objects with different Thread
+        Thread player1Thread = new Thread(player1);
+        Thread player2Thread = new Thread(player2);
 
-        String response = "";
+        //Starting threads
+        player1Thread.start();
+        player2Thread.start();
 
-        for (int i = 1; i < 11 ; i++) {
+        //Starting chat
+        try {
 
-            if (i < 2) {
+            //Waiting for threads completion
+            player1Thread.join();
+            player2Thread.join();
 
-                response = i + " message received!";
+        }
+        catch (InterruptedException interruptedException) {
 
-            } else {
-
-                response = " " + i + " messages received!";
-            }
-
-            System.out.println(
-                    PlayerMapper.mapToMessage(player2, response)
+            System.err.println(
+                    "Game interrupted: " + interruptedException.getMessage()
             );
 
+            Thread.currentThread().interrupt();
         }
 
         System.out.println(
-                "Stop Condition Happened!"
+                "Messaging Quote Reached!!!"
         );
     }
 }

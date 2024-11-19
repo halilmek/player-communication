@@ -4,14 +4,19 @@ import entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
 
 public class PlayerRepository {
 
     private final Map<String, Player> playerMap = new HashMap<>();
 
-    public void save (Player player) {
+    public Player createAndSavePlayer (String name, BlockingQueue<String> incomingQueue, BlockingQueue<String> outgoingQueue, boolean isInitiator, int maxMessages) {
 
-        playerMap.put(player.getName(), player);
+        Player player = new Player(name, incomingQueue, outgoingQueue,isInitiator, maxMessages);
+
+        playerMap.put(name, player);
+
+        return player;
     }
 
     public Player findByName (String playerName) {

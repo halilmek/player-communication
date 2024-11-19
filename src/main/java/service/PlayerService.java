@@ -4,5 +4,5 @@ import dto.MessageDTO;
 
 public interface PlayerService {
 
-    void initiatingConversation(MessageDTO initialMessageDTO);
+    void startGame ();
 }

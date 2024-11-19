@@ -1,12 +1,17 @@
 import controller.PlayerController;
 
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
+
 public class PlayerCommunication {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException{
 
         PlayerController controller = new PlayerController();
 
-        controller.startGame();
+        controller.startGameController();
     }
 
 }
