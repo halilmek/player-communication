@@ -1,15 +1,16 @@
 package controller;
 
 import dto.MessageDTO;
+import service.PlayerService;
 import service.serviceImpl.PlayerServiceImpl;
 
 public class PlayerController {
 
-    private final PlayerServiceImpl playerServiceImpl;
+    private final PlayerService playerService;
 
-    public PlayerController() {
+    public PlayerController(PlayerService playerService) {
 
-        this.playerServiceImpl = new PlayerServiceImpl();
+        this.playerService = playerService;
     }
 
 
@@ -17,7 +18,6 @@ public class PlayerController {
 
         System.out.println("Game is starting!!!");
 
-        playerServiceImpl.startGame();
-        //playerServiceImpl.initiatingConversation(new MessageDTO(" says hello to Player Beta!"));
+        playerService.startGame();
     }
 }

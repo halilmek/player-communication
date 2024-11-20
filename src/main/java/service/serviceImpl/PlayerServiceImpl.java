@@ -28,44 +28,76 @@ public class PlayerServiceImpl implements PlayerService {
         BlockingQueue<String> queue2 = new LinkedBlockingQueue<>();
 
         //Defining the players
-        playerRepository.createAndSavePlayer("Initiator", queue1,queue2,true,10);
-        playerRepository.createAndSavePlayer("Beta", queue2, queue1, false, 10);
+        playerRepository.createAndSavePlayer("Initiator", queue1,queue2,true);
+        playerRepository.createAndSavePlayer("Beta", queue2, queue1, false);
     }
 
     @Override
     public void startGame() {
 
-        //Bring players from DB
+        //Bringing players from DB
         Player player1 = playerRepository.findByName("Initiator");
         Player player2 = playerRepository.findByName("Beta");
 
-        //Starting player objects with different Thread
-        Thread player1Thread = new Thread(player1);
-        Thread player2Thread = new Thread(player2);
-
-        //Starting threads
-        player1Thread.start();
-        player2Thread.start();
-
-        //Starting chat
         try {
 
-            //Waiting for threads completion
-            player1Thread.join();
-            player2Thread.join();
-
-        }
-        catch (InterruptedException interruptedException) {
-
-            System.err.println(
-                    "Game interrupted: " + interruptedException.getMessage()
-            );
+            initiateConversation(player1, player2);
+        } catch (InterruptedException interruptedException) {
 
             Thread.currentThread().interrupt();
+
+            System.err.println(
+                    "Game interrupted " + interruptedException.getMessage()
+            );
         }
 
         System.out.println(
                 "Messaging Quote Reached!!!"
         );
+    }
+
+    public void  initiateConversation (Player player1, Player player2) throws InterruptedException {
+
+        int messageCounter = 1;
+        String initialMessage = new MessageDTO("", "hi from initiator!!!").toString();
+
+        System.out.println(
+                player1.getName() + " sent: " + initialMessage
+        );
+
+        player1.getOutgoingMessage().put(initialMessage);
+
+        while (messageCounter < 10) {
+
+            String receivedMessage = player2.getIncomingMessage().take();
+
+            System.out.println(
+                   player2.getName() + " received: " + receivedMessage
+            );
+
+            MessageDTO response = PlayerMapper.createResponse("", messageCounter);
+
+            System.out.println(
+                   player2.getName() + " sent: " + response
+            );
+
+            player2.getOutgoingMessage().put(response.toString());
+
+            String notification = player1.getIncomingMessage().take();
+
+            System.out.println(
+                   player1.getName() + " received: " + notification
+            );
+
+            MessageDTO initiatorNextMessage = PlayerMapper.createMessage("", ++messageCounter);
+
+            System.out.println(
+                    player1.getName() + " sent: " + initiatorNextMessage
+            );
+
+            player1.getOutgoingMessage().put(initiatorNextMessage.toString());
+        }
+
+
     }
 }

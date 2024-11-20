@@ -10,9 +10,9 @@ public class PlayerRepository {
 
     private final Map<String, Player> playerMap = new HashMap<>();
 
-    public Player createAndSavePlayer (String name, BlockingQueue<String> incomingQueue, BlockingQueue<String> outgoingQueue, boolean isInitiator, int maxMessages) {
+    public Player createAndSavePlayer (String name, BlockingQueue<String> incomingQueue, BlockingQueue<String> outgoingQueue, boolean isInitiator) {
 
-        Player player = new Player(name, incomingQueue, outgoingQueue,isInitiator, maxMessages);
+        Player player = new Player(name, incomingQueue, outgoingQueue,isInitiator);
 
         playerMap.put(name, player);
 

@@ -1,15 +1,15 @@
 import controller.PlayerController;
-
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.LinkedBlockingQueue;
+import service.PlayerService;
+import service.serviceImpl.PlayerServiceImpl;
 
 public class PlayerCommunication {
 
     public static void main(String[] args) throws InterruptedException{
 
-        PlayerController controller = new PlayerController();
+        //Polymorphism and Functional Interface
+        PlayerService playerService = new PlayerServiceImpl();
+        PlayerController controller = new PlayerController(playerService);
+
 
         controller.startGameController();
     }

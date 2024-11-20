@@ -2,8 +2,8 @@ package dto;
 
 public class MessageDTO {
 
-    private String senderName;
-    private String content;
+    private final String senderName;
+    private final String content;
 
     public MessageDTO(String senderName, String content) {
 
@@ -17,19 +17,10 @@ public class MessageDTO {
         return senderName;
     }
 
-    public void setSenderName(String senderName) {
-
-        this.senderName = senderName;
-    }
 
     public String getContent() {
 
         return content;
-    }
-
-    public void setContent(String content) {
-
-        this.content = content;
     }
 
     @Override

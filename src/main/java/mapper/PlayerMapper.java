@@ -12,6 +12,6 @@ public class PlayerMapper {
 
     public static MessageDTO createMessage (String senderName, int messageCounter) {
 
-        return new MessageDTO("message # " + messageCounter + " from ", senderName);
+        return new MessageDTO("message # " + messageCounter, senderName);
     }
 }
