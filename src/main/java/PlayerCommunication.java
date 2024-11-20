@@ -6,12 +6,15 @@ public class PlayerCommunication {
 
     public static void main(String[] args){
 
-        //Polymorphism and Functional Interface
-        PlayerService playerService = new PlayerServiceImpl();
+        if (args.length > 0 && args[0].equals("multi")) {
 
-        PlayerController controller = new PlayerController(playerService);
+            System.out.println("Running in MULTI-PROCESS mode...");
+            MultiProcessPlayerRunner.run();
+        } else {
 
-        controller.startGameController();
+            System.out.println("Running in SINGLE-PROCESS mode...");
+            SingleProcessPlayerRunner.run();
+        }
     }
 
 }
