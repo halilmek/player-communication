@@ -2,6 +2,6 @@ package enums;
 
 public enum PlayerStatus {
 
-    ACTIVE,
-    INACTIVE
+    INITIATOR,
+    RECEIVER
 }

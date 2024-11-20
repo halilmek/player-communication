@@ -4,12 +4,12 @@ import service.serviceImpl.PlayerServiceImpl;
 
 public class PlayerCommunication {
 
-    public static void main(String[] args) throws InterruptedException{
+    public static void main(String[] args){
 
         //Polymorphism and Functional Interface
         PlayerService playerService = new PlayerServiceImpl();
-        PlayerController controller = new PlayerController(playerService);
 
+        PlayerController controller = new PlayerController(playerService);
 
         controller.startGameController();
     }

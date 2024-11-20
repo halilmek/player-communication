@@ -1,5 +1,6 @@
 package dto;
 
+//A Data Transfer Object representing a message sent between players.
 public class MessageDTO {
 
     private final String senderName;
