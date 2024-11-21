@@ -5,7 +5,9 @@ import java.io.PrintWriter;
 
 public class PlayerProcess {
     public static void main(String[] args) {
+
         if (args.length < 2) {
+
             System.err.println("Usage: java PlayerProcess <PlayerName> <Role>");
             System.exit(1);
         }
@@ -24,7 +26,9 @@ public class PlayerProcess {
             }
 
             while (messageCounter < 10) {
+
                 String receivedMessage = in.readLine();
+
                 if (receivedMessage == null) {
                     System.err.println("[DEBUG] " + playerName + " received null. Exiting loop.");
                     break;
@@ -33,16 +37,20 @@ public class PlayerProcess {
                 System.out.println("[DEBUG] " + playerName + " received: " + receivedMessage);
 
                 messageCounter++;
+
                 String responseMessage = role.equalsIgnoreCase("Initiator")
                         ? "Message #" + messageCounter + " from " + playerName
                         : "Response #" + messageCounter + " from " + playerName;
 
                 out.println(responseMessage);
+
                 System.out.println("[DEBUG] " + playerName + " sent: " + responseMessage);
             }
 
             System.out.println("[DEBUG] " + playerName + " finished messaging. Exiting.");
+
         } catch (Exception e) {
+
             System.err.println("[ERROR] " + playerName + " encountered an error: " + e.getMessage());
         }
     }
