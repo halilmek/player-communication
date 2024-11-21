@@ -1,59 +1,49 @@
-import java.io.*;
-import java.net.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 
 public class PlayerProcess {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
+        if (args.length < 2) {
+            System.err.println("Usage: java PlayerProcess <PlayerName> <Role>");
+            System.exit(1);
+        }
+
         String playerName = args[0];
-        int port = Integer.parseInt(args[1]);
+        String role = args[1];
+        int messageCounter = 0;
 
-        try (ServerSocket serverSocket = new ServerSocket(port)) {
-            System.out.println(playerName + " started on port " + port);
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+             PrintWriter out = new PrintWriter(new OutputStreamWriter(System.out), true)) {
 
-            while (true) {
-                Socket client = null;
-                try {
-                    System.out.println("[LOG] " + playerName + " waiting for a connection...");
-                    client = serverSocket.accept();
-                    System.out.println("[LOG] " + playerName + " connection accepted.");
-
-                    BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-                    PrintWriter out = new PrintWriter(client.getOutputStream(), true);
-
-                    // Mesaj al
-                    String message = in.readLine();
-                    if (message == null) {
-                        System.err.println("[ERROR] " + playerName + " received null message. Closing connection.");
-                        client.close();
-                        continue;
-                    }
-                    System.out.println("[LOG] " + playerName + " received: " + message);
-
-                    // Yanıt oluştur ve gönder
-                    String response = message + "(Response from " + playerName + ")";
-                    System.out.println("[LOG] " + playerName + " sending response: " + response);
-                    out.println(response);
-                    out.flush();
-
-                    Thread.sleep(200); // Yanıt gönderildikten sonra bekleme
-                    System.out.println("[LOG] " + playerName + " response sent successfully.");
-
-                } catch (SocketTimeoutException e) {
-                    System.err.println("[ERROR] " + playerName + " connection timeout: " + e.getMessage());
-                } catch (IOException | InterruptedException e) {
-                    System.err.println("[ERROR] " + playerName + " encountered an issue: " + e.getMessage());
-                } finally {
-                    if (client != null && !client.isClosed()) {
-                        try {
-                            client.close();
-                            System.out.println("[LOG] " + playerName + " connection closed.");
-                        } catch (IOException e) {
-                            System.err.println("[ERROR] " + playerName + " failed to close connection: " + e.getMessage());
-                        }
-                    }
-                }
+            if (role.equalsIgnoreCase("Initiator")) {
+                String initialMessage = "Message #1 from " + playerName;
+                out.println(initialMessage);
+                System.out.println("[DEBUG] " + playerName + " sent: " + initialMessage);
             }
-        } catch (IOException e) {
-            System.err.println("[ERROR] " + playerName + " could not start on port " + port + ": " + e.getMessage());
+
+            while (messageCounter < 10) {
+                String receivedMessage = in.readLine();
+                if (receivedMessage == null) {
+                    System.err.println("[DEBUG] " + playerName + " received null. Exiting loop.");
+                    break;
+                }
+
+                System.out.println("[DEBUG] " + playerName + " received: " + receivedMessage);
+
+                messageCounter++;
+                String responseMessage = role.equalsIgnoreCase("Initiator")
+                        ? "Message #" + messageCounter + " from " + playerName
+                        : "Response #" + messageCounter + " from " + playerName;
+
+                out.println(responseMessage);
+                System.out.println("[DEBUG] " + playerName + " sent: " + responseMessage);
+            }
+
+            System.out.println("[DEBUG] " + playerName + " finished messaging. Exiting.");
+        } catch (Exception e) {
+            System.err.println("[ERROR] " + playerName + " encountered an error: " + e.getMessage());
         }
     }
 }

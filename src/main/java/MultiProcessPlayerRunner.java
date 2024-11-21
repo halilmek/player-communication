@@ -1,91 +1,64 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.IOException;
-import java.net.Socket;
 
 public class MultiProcessPlayerRunner {
+
     public static void run() {
+        System.out.println("Running Multi-Process Player...");
+
         try {
-            // Oyuncu süreçlerini başlat
-            Process player1 = new ProcessBuilder("java", "-cp", "target/classes", "PlayerProcess", "Player1", "5000").start();
-            Process player2 = new ProcessBuilder("java", "-cp", "target/classes", "PlayerProcess", "Player2", "5002").start();
+            ProcessBuilder pb1 = new ProcessBuilder("java", "-cp", "target/classes", "PlayerProcess", "Player1", "Initiator");
+            ProcessBuilder pb2 = new ProcessBuilder("java", "-cp", "target/classes", "PlayerProcess", "Player2", "Receiver");
 
-            System.out.println("Both players started in separate processes.");
+            Process player1 = pb1.start();
+            Process player2 = pb2.start();
 
-            // Oyuncuların başlatılması için bekleme süresi
-            Thread.sleep(5000);
+            BufferedReader player1In = new BufferedReader(new InputStreamReader(player1.getInputStream()));
+            PrintWriter player1Out = new PrintWriter(new OutputStreamWriter(player1.getOutputStream()), true);
 
-            // Soket bağlantıları oluştur
-            System.out.println("Connecting to Player 1 on port 5000...");
-            Socket player1Socket = new Socket("localhost", 5000);
-            System.out.println("Connected to Player 1.");
+            BufferedReader player2In = new BufferedReader(new InputStreamReader(player2.getInputStream()));
+            PrintWriter player2Out = new PrintWriter(new OutputStreamWriter(player2.getOutputStream()), true);
 
-            System.out.println("Connecting to Player 2 on port 5002...");
-            Socket player2Socket = new Socket("localhost", 5002);
-            System.out.println("Connected to Player 2.");
+            int messageCounter = 0;
 
-            PrintWriter out1 = new PrintWriter(player1Socket.getOutputStream(), true);
-            BufferedReader in1 = new BufferedReader(new InputStreamReader(player1Socket.getInputStream()));
+            while (messageCounter < 10) {
+                System.out.println("[DEBUG] Iteration: " + (messageCounter + 1));
 
-            PrintWriter out2 = new PrintWriter(player2Socket.getOutputStream(), true);
-            BufferedReader in2 = new BufferedReader(new InputStreamReader(player2Socket.getInputStream()));
-
-            // Mesajlaşma döngüsü
-            int messageCounter = 1;
-            out1.println("Hi from Initiator!");
-            System.out.println("Message sent to Player 1: Hi from Initiator!");
-
-
-
-            while (messageCounter <= 10) {
-                try {
-                    // Player 1'e mesaj gönder
-                    String messageToPlayer1 = "Message # " + messageCounter;
-                    System.out.println("[LOG] Sending to Player 1: " + messageToPlayer1);
-                    out1.println(messageToPlayer1);
-                    out1.flush();
-
-                    // Player 1'den yanıt al
-                    System.out.println("[LOG] Waiting for Player 1 response...");
-                    String response1 = in1.readLine(); // Burada takılıyor olabilir
-                    if (response1 == null) {
-                        System.err.println("[ERROR] Player 1 did not respond. Breaking loop.");
-                        break;
-                    }
-                    System.out.println("[LOG] Player 1 responded with: " + response1);
-
-                    // Player 2'ye mesaj gönder
-                    String messageToPlayer2 = "Response from Player 1: " + response1;
-                    System.out.println("[LOG] Sending to Player 2: " + messageToPlayer2);
-                    out2.println(messageToPlayer2);
-                    out2.flush();
-
-                    // Player 2'den yanıt al
-                    System.out.println("[LOG] Waiting for Player 2 response...");
-                    String response2 = in2.readLine();
-                    if (response2 == null) {
-                        System.err.println("[ERROR] Player 2 did not respond. Breaking loop.");
-                        break;
-                    }
-                    System.out.println("[LOG] Player 2 responded with: " + response2);
-
-                    messageCounter++;
-                } catch (IOException e) {
-                    System.err.println("[ERROR] Connection issue: " + e.getMessage());
+                // Player1'den mesaj al
+                String messageFromPlayer1 = player1In.readLine();
+                if (messageFromPlayer1 == null) {
+                    System.err.println("[ERROR] Player1 disconnected. Exiting loop.");
                     break;
                 }
+                System.out.println("Initiator sent: " + messageFromPlayer1);
+
+                // Player2'ye mesaj gönder
+                player2Out.println(messageFromPlayer1);
+                System.out.println("[DEBUG] Sent to Player2: " + messageFromPlayer1);
+
+                // Player2'den yanıt al
+                String responseFromPlayer2 = player2In.readLine();
+                if (responseFromPlayer2 == null) {
+                    System.err.println("[ERROR] Player2 disconnected. Exiting loop.");
+                    break;
+                }
+                System.out.println("Beta received: " + responseFromPlayer2);
+
+                // Player2'nin yanıtını Player1'e gönder
+                player1Out.println(responseFromPlayer2);
+                System.out.println("[DEBUG] Sent to Player1: " + responseFromPlayer2);
+
+                messageCounter++;
             }
 
+            System.out.println("Messaging Quote Reached!!!");
 
-
-
-            // Soketleri kapat
-            player1Socket.close();
-            System.out.println("Connection to Player 1 closed.");
-            player2Socket.close();
-            System.out.println("Connection to Player 2 closed.");
-        } catch (IOException | InterruptedException e) {
+            player1.destroy();
+            player2.destroy();
+            System.out.println("[DEBUG] Processes terminated. Exiting program.");
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

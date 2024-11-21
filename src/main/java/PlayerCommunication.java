@@ -3,21 +3,17 @@ import service.PlayerService;
 import service.serviceImpl.PlayerServiceImpl;
 
 public class PlayerCommunication {
-
-    public static void main(String[] args){
-
-        if (args.length > 0 && args[0].equals("multi")) {
-
+    public static void main(String[] args) {
+        if (args.length > 0 && args[0].equalsIgnoreCase("multi")) {
             System.out.println("Running in MULTI-PROCESS mode...");
             MultiProcessPlayerRunner.run();
         } else {
-
             System.out.println("Running in SINGLE-PROCESS mode...");
-            SingleProcessPlayerRunner.run();
+            // Tekli süreç mantığı buraya eklenebilir
         }
     }
-
 }
+
 
 
 /*
